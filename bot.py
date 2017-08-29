@@ -4,3 +4,4 @@
 
 import asyncio, discord
 
+print("Hello, world!")
