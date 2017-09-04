@@ -7,6 +7,7 @@
 import time
 import cfg
 import sqlite3
+import re
 
 # More dependencies (need to be installed)
 import asyncio
@@ -20,18 +21,32 @@ db = sqlite3.connect('database.sqlite')
 cursor = db.cursor()
 
 # Test purposes only // TODO: Remove
+# This lets me change keys in tables for testing
 cursor.execute('''
-DROP TABLE test
+DROP TABLE test_teams;
+''')
+cursor.execute('''
+DROP TABLE  test_hackathons;
 ''')
 # End testing code
 
 cursor.execute('''
-CREATE TABLE IF NOT EXISTS test (
+CREATE TABLE IF NOT EXISTS test_teams (
   team_id integer PRIMARY KEY UNIQUE,
+  hackathon_id integer NOT NULL,
   team_owner integer NOT NULL,
   team_member_1 integer,
   team_member_2 integer,
   team_member_3 integer
+);
+''')
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS test_hackathons (
+  hackathon_id integer PRIMARY KEY UNIQUE,
+  hackathon_name text NOT NULL UNIQUE,
+  site_url text NOT NULL,
+  hackathon_date text NOT NULL, --Formatted in ISO 8601 (of course)
+  hackathon_length integer NOT NULL
 );
 ''')
 
@@ -56,6 +71,12 @@ CREATE TABLE IF NOT EXISTS test (
 #     print(item)
 
 
+@asyncio.coroutine
+def scrape_mlh_site():
+    pass
+    # TODO: Scrape mlh.io/events
+
+
 # This function fires whenever a message is sent in a channel where the bot can view messages
 @client.event
 @asyncio.coroutine
@@ -71,8 +92,11 @@ def on_message(message):
     # Make variables so I can type less
     content = message.content
     author = message.author
+    channel = message.channel
 
     # Command handling goes here
+    if content == "//scrapeHackathons":
+        yield from scrape_mlh_site()
 
 
 # This function fires when the client first connects to Discord
