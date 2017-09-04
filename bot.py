@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS test_hackathons (
 def scrape_mlh_site():
     pass
     # TODO: Scrape mlh.io/events
+    # It's nicely formatted and everything
 
 
 # This function fires whenever a message is sent in a channel where the bot can view messages
