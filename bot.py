@@ -7,7 +7,8 @@
 import time
 import cfg
 import sqlite3
-import re
+import requests
+# import json
 
 # More dependencies (need to be installed)
 import asyncio
@@ -25,31 +26,18 @@ cursor = db.cursor()
 cursor.execute('''
 DROP TABLE test_teams;
 ''')
-cursor.execute('''
-DROP TABLE  test_hackathons;
-''')
 # End testing code
 
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS test_teams (
   team_id integer PRIMARY KEY UNIQUE,
-  hackathon_id integer NOT NULL,
+  hackathon_name text NOT NULL,
   team_owner integer NOT NULL,
   team_member_1 integer,
   team_member_2 integer,
   team_member_3 integer
 );
 ''')
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS test_hackathons (
-  hackathon_id integer PRIMARY KEY UNIQUE,
-  hackathon_name text NOT NULL UNIQUE,
-  site_url text NOT NULL,
-  hackathon_date text NOT NULL, --Formatted in ISO 8601 (of course)
-  hackathon_length integer NOT NULL
-);
-''')
-
 # cursor.execute('''
 # INSERT INTO test VALUES (
 #   1,
@@ -73,9 +61,18 @@ CREATE TABLE IF NOT EXISTS test_hackathons (
 
 @asyncio.coroutine
 def scrape_mlh_site():
-    pass
-    # TODO: Scrape mlh.io/events
+    # TODO: Get JSON data from https://mlh-events.now.sh/na-2018
     # It's nicely formatted and everything
+    req = requests.get("https://mlh-events.now.sh/na-2018") #TODO: Not hardcode the season
+    hack_json = req.json()
+
+    return hack_json
+
+    # with open('hackathons.json', 'w') as outfile:
+    #     json.dump(hackathons, outfile)
+
+
+hackathons = scrape_mlh_site()
 
 
 # This function fires whenever a message is sent in a channel where the bot can view messages
@@ -105,6 +102,7 @@ def on_message(message):
 @asyncio.coroutine
 def on_ready():
     print(time.strftime("%Y-%m-%d %H:%M:%S") + ': Connected to Discord')
+    yield from scrape_mlh_site()
 
 # Run the client once all the setup is finished
 client.run(cfg.TOKEN)

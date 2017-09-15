@@ -116,3 +116,5 @@ cfg.py
 
 # Databases
 *.sqlite
+hackathons.json
+
