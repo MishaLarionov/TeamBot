@@ -103,6 +103,7 @@ def make_team(content, author, channel, params):
     else:
         yield from client.send_message(channel, "{}, I couldn't find that event!".format(author.mention))
 
+
 # This function fires whenever a message is sent in a channel where the bot can view messages
 @client.event
 @asyncio.coroutine
